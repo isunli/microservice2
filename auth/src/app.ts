@@ -14,7 +14,7 @@ app.use(json());
 app.use(
   coockieSession({
     signed: false, //not encrypt the jwt
-    secure: true,
+    secure: process.env.NODE_ENV !== "test",
   })
 );
 app.use(currentUserRouter);
