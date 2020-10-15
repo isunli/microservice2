@@ -1,24 +1,16 @@
-import axios from "axios";
-
+import buildClient from "../api/build-client";
 const LandingPage = ({ currentUser }) => {
-  return <h1>Landing Page </h1>;
+  return currentUser ? (
+    <h1>You are signed in</h1>
+  ) : (
+    <h1>You are not signed in</h1>
+  );
 };
 
-LandingPage.getInitialProps = async () => {
-  if (typeof window === "undefined") {
-    // on server
-    // request to http:ingres...
-    const { data } = await axios.get(
-      "http://auth-srv:3000/api/users/currentuser"
-    );
-    // {currentUser: null||data}
-    return data;
-  } else {
-    // we are on the browser
-    // requests can be made with a base url of
-    const { data } = await axios.get("/api/users/currentuser");
-    // {currentUser: null||data}
-    return data;
-  }
+LandingPage.getInitialProps = async ({ req }) => {
+  const { data } = await buildClient(req, "auth-srv:3000").get(
+    "/api/users/currentuser"
+  );
+  return data;
 };
 export default LandingPage;
