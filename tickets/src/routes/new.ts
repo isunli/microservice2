@@ -2,6 +2,9 @@ import express, { Request, Response } from "express";
 import { requireAuth, validateRequest } from "@sltickets/common";
 import { body } from "express-validator";
 import { Ticket } from "../models/ticket";
+import { TicketCreatedPublisher } from "../events/publishers/ticket-created-publisher";
+import { natsWrapper } from "../nats-wrapper";
+
 const router = express.Router();
 
 router.post(
@@ -20,6 +23,14 @@ router.post(
       userId: req.currentUser!.id,
     });
     await ticket.save();
+    // Better way is make these two actions in one transaction
+    // Prevent first successed and second fail
+    new TicketCreatedPublisher(natsWrapper.client).publish({
+      id: ticket.id,
+      title: ticket.title,
+      price: ticket.price,
+      userId: ticket.userId, //pull data from mongose because it can have pre-save hooks that modify data
+    });
     res.status(201).send(ticket);
   }
 );
