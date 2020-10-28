@@ -25,7 +25,7 @@ router.post(
     await ticket.save();
     // Better way is make these two actions in one transaction
     // Prevent first successed and second fail
-    new TicketCreatedPublisher(natsWrapper.client).publish({
+    await new TicketCreatedPublisher(natsWrapper.client).publish({
       id: ticket.id,
       title: ticket.title,
       price: ticket.price,
