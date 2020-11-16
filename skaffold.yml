@@ -6,7 +6,8 @@ deploy:
       - ./infra/k8s/*
 build:
   local:
-    push: true
+    #push: true
+    push: false
   artifacts:
     - image: localhost:32000/auth
       context: auth
@@ -42,6 +43,14 @@ build:
             dest: .
     - image: localhost:32000/expiration
       context: expiration
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: "src/**/*.ts"
+            dest: .
+    - image: localhost:32000/payments
+      context: payments
       docker:
         dockerfile: Dockerfile
       sync:
