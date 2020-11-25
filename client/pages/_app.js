@@ -5,18 +5,24 @@ const AppComponent = ({ Component, pageProps, currentUser }) => {
   return (
     <div>
       <Header currentUser={currentUser} />
-      <Component currentUser={currentUser} {...pageProps} />
+      <div className="container">
+        <Component currentUser={currentUser} {...pageProps} />
+      </div>
     </div>
   );
 };
 
 AppComponent.getInitialProps = async (appContext) => {
   // pages getInitProps is different than component's getInitProps
-  const client = buildClient(appContext.ctx.req, "auth-srv:3000");
-  const { data } = await client.get("api/users/currentuser");
+  const clients = buildClient(appContext.ctx.req);
+  const { data } = await clients.auth.get("/api/users/currentuser");
   let pageProps = {};
   if (appContext.Component.getInitialProps) {
-    pageProps = await appContext.Component.getInitialProps(appContext.ctx);
+    pageProps = await appContext.Component.getInitialProps(
+      appContext.ctx,
+      clients,
+      data.currentUser
+    );
   }
 
   return {

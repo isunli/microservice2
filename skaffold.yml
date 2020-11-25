@@ -6,8 +6,8 @@ deploy:
       - ./infra/k8s/*
 build:
   local:
-    #push: true
-    push: false
+    push: true
+    # push: false
   artifacts:
     - image: localhost:32000/auth
       context: auth
